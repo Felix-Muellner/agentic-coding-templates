@@ -1,9 +1,9 @@
 {
-  "id": 25907722,
+  "id": 26393862,
   "name": "Protect main",
   "target": "branch",
   "source_type": "Repository",
-  "source": "Felix-Muellner/cars-api",
+  "source": "Felix-Muellner/agentic-coding-templates",
   "enforcement": "active",
   "conditions": {
     "ref_name": {
@@ -42,16 +42,7 @@
       "parameters": {
         "strict_required_status_checks_policy": true,
         "do_not_enforce_on_create": false,
-        "required_status_checks": [
-          {
-            "context": "check",
-            "integration_id": 15368
-          },
-          {
-            "context": "container",
-            "integration_id": 15368
-          }
-        ]
+        "required_status_checks": []
       }
     }
   ],
