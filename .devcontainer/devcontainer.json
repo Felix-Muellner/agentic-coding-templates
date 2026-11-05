@@ -1,0 +1,7 @@
+{
+  name: "My DevBox",
+
+  image: "mcr.microsoft.com/devcontainers/base:ubuntu"
+
+  
+}
