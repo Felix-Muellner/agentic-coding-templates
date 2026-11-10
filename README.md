@@ -18,9 +18,9 @@ More templates (glossary, spec, and similar) will be added as they prove useful.
 
 Copy the template you need into the root of the target repo, then start your agent. Each template explains its own conventions at the top.
 
-For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.gitignore`, and audits tests, linting, CI, and secret scanning. It asks for confirmation before changing anything.
+For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.gitignore`, adapts the dev container to the stack, and audits tests, linting, CI, and secret scanning. It asks for confirmation before making these changes, then removes its setup section.
 
-For the dev container: copy `templates/.devcontainer/` into the target repo as `.devcontainer/`, then open the repo in Codespaces or VS Code Dev Containers.
+For the dev container: copy `templates/.devcontainer/` into the target repo as `.devcontainer/`, then open the repo in Codespaces or VS Code Dev Containers. Copy it together with `CLAUDE.md`: the baseline gets the agent running, and the agent then extends it for the project's stack.
 
 For the ruleset: import `protect-main.json` under **Settings → Rules → Rulesets** (steps in the [ruleset README](branch-rulesets/README.md)).
 
