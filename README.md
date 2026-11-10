@@ -1,6 +1,6 @@
 # agentic-coding-templates
 
-Reusable markdown templates for agentic coding: instruction files, workflow rules, and project scaffolding that I would otherwise rewrite for every new repo.
+Reusable templates for agentic coding: an agent instruction file, a dev container, and a branch ruleset that I would otherwise rewrite for every new repo.
 
 > **Status:** experimental. Written for a solo workflow in disposable environments (e.g. Codespaces) and tried mostly with [Claude Code](https://docs.claude.com/en/docs/claude-code/overview). Expect changes as I learn what works.
 
@@ -9,6 +9,8 @@ Reusable markdown templates for agentic coding: instruction files, workflow rule
 | File | Purpose |
 |------|---------|
 | [`templates/CLAUDE.md`](templates/CLAUDE.md) | Self-configuring agent instructions: first-run setup, test-driven development, issue-based workflow, independent verification, hard boundaries. |
+| [`templates/.devcontainer/`](templates/.devcontainer/) | Baseline dev container: latest Ubuntu LTS base image, GitHub CLI, and Claude Code installed on create. |
+| [`branch-rulesets/protect-main.json`](branch-rulesets/protect-main.json) | GitHub ruleset that protects `main`: PRs only, squash merges, no force pushes, no bypass. See its [README](branch-rulesets/README.md). |
 
 More templates (glossary, spec, and similar) will be added as they prove useful.
 
@@ -17,6 +19,12 @@ More templates (glossary, spec, and similar) will be added as they prove useful.
 Copy the template you need into the root of the target repo, then start your agent. Each template explains its own conventions at the top.
 
 For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.gitignore`, and audits tests, linting, CI, and secret scanning. It asks for confirmation before changing anything.
+
+For the dev container: copy `templates/.devcontainer/` into the target repo as `.devcontainer/`, then open the repo in Codespaces or VS Code Dev Containers.
+
+For the ruleset: import `protect-main.json` under **Settings → Rules → Rulesets** (steps in the [ruleset README](branch-rulesets/README.md)).
+
+This repo uses its own dev container: the root `.devcontainer/` is a copy of the template, and a CI check fails if the two drift apart.
 
 ## Principles
 
@@ -28,7 +36,7 @@ For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.
 
 ## Recommended repo setup
 
-The `CLAUDE.md` template assumes `main` is protected:
+The `CLAUDE.md` template assumes `main` is protected. The [ruleset](branch-rulesets/protect-main.json) covers the first point; the rest is manual:
 
 - Require pull requests for `main`, with no bypass (including admins).
 - Require the CI checks to pass.
