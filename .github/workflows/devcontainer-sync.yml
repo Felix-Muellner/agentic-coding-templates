@@ -1,0 +1,14 @@
+name: Devcontainer sync
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # fails if the root copy and the template differ, and prints the difference
+      - run: diff -u templates/devcontainer/devcontainer.json .devcontainer/devcontainer.json
