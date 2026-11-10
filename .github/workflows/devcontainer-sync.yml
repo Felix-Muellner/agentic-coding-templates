@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       # fails if the root copy and the template differ, and prints the difference
-      - run: diff -u templates/devcontainer/devcontainer.json .devcontainer/devcontainer.json
+      - run: diff -u templates/.devcontainer/devcontainer.json .devcontainer/devcontainer.json
