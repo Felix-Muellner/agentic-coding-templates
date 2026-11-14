@@ -39,7 +39,7 @@ Every behavior change needs an issue. Issue body: goal, acceptance criteria (che
 
 **Glossary (`context.md`):** create it during the first grill session. Term, one-line definition, names to avoid; about one screen, no progress notes.
 - Names in code, tests, docs, issues, and commits follow it.
-- Add new entries yourself; changing or removing a definition needs my approval. Never invent definitions.
+- Add new entries yourself and list them under terminology changes in the PR; changing or removing a definition needs my approval.
 
 ---
 
@@ -51,16 +51,16 @@ Every behavior change needs an issue. Issue body: goal, acceptance criteria (che
 - **Tests and CI:** never delete, skip, or loosen a test, or edit CI config, without flagging it in the PR. A test that changes because the requirement changed gets its own commit: `test(#n): <why>`.
 - **Dev container:** when a new tool is needed, update `.devcontainer/` in the same PR.
 - **Docs** change in the same PR as the code. Install and run instructions use only commands that were actually run. README stays short; longer material goes in `docs/`.
-- **Naming:** branches `<type>/<issue>-<short-description>`, commits `<type>(#<issue>): <description>`.
+- **Naming:** branches `<type>/<issue>-<short-description>`, integration branches `run/<name>`, commits `<type>(#<issue>): <description>`.
 - **Staging:** never `git add -A` or `git add .`; stage named paths.
 - **Push after every green step.**
-- **Stop and report** if CI fails or the verifier rejects twice on the same problem.
+- **Stop and report** if CI or the verifier fails twice on the same problem.
 
 ---
 
 ## 5. Finish
 
-A PR is one meaningful, reviewable step. It may close several related issues (`Closes #12, closes #13`). How work is split into PRs and branches comes from my prompt; if unstated, open one PR into `main` and stop.
+A PR is one meaningful, reviewable step. It may close several related issues (`Closes #12, closes #13`). How work is split into PRs and branches comes from my prompt; if unstated, open one PR into `main` and stop. For a long autonomous run, my prompt may name an integration branch `run/<name>`: issue PRs target it, you merge them yourself once the verifier confirms, and the final PR from it into `main` is mine to merge.
 
 **Definition of Done** (checked by the verifier):
 - Every acceptance criterion has a test that would fail without the change.
@@ -68,7 +68,7 @@ A PR is one meaningful, reviewable step. It may close several related issues (`C
 - No doc contradicts the diff. No second name for a term in `context.md`.
 - The PR description lists: changed tests, TDD exemptions, new dependencies (with reason), decisions made without asking, terminology changes, docs touched, deviations.
 
-**Verifier:** before you merge any PR yourself, a fresh sub-agent that sees only the acceptance criteria, the diff, and `context.md` must confirm the Definition of Done.
+**Verifier:** before you hand a PR to me for review or merge one yourself, a fresh sub-agent that sees only the acceptance criteria, the diff, and `context.md` must confirm the Definition of Done.
 
 **End of every run:** comment on each touched issue ("done, PR #n" or "stopped because ..."), check `context.md` against the code, and list docs you suspect are outdated.
 
