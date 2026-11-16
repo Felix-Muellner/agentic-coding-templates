@@ -52,6 +52,7 @@ Every behavior change needs an issue. Issue body: goal, acceptance criteria (che
 - **Dev container:** when a new tool is needed, update `.devcontainer/` in the same PR.
 - **Docs** change in the same PR as the code. Install and run instructions use only commands that were actually run. README stays short; longer material goes in `docs/`.
 - **Naming:** branches `<type>/<issue>-<short-description>`, integration branches `run/<name>`, commits `<type>(#<issue>): <description>`.
+- **Staging:** never `git add -A` or `git add .`; stage named paths.
 - **Push after every green step.**
 - **Stop and report** if CI or the verifier fails twice on the same problem.
 
@@ -76,11 +77,14 @@ A PR is one meaningful, reviewable step. It may close several related issues (`C
 ## 6. Boundaries (cannot be overridden)
 
 **Never:**
+- Read, print, create, or commit secrets. If a credential is needed, tell me.
+- Commit to or merge into `main`.
 - Change repo or account settings.
 - Force-push, rewrite history, or delete branches you did not create.
 
 **Ask first:**
 - Sign-ups, paid API calls, deploys, sending emails or messages.
+- Global installs or touching files outside the project.
 - Obscure or unmaintained dependencies.
 - Anything that changes the shape of the work.
 
