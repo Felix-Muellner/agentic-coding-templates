@@ -21,7 +21,7 @@ Copy the template you need into the root of the target repo, then start your age
 
 For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.gitignore`, adapts the dev container to the stack, and audits tests, linting, CI, and secret scanning. It asks for confirmation before making these changes, then removes its setup section.
 
-For the hooks: copy `templates/.claude/` into the target repo as `.claude/`, together with `CLAUDE.md`. Several rules live only in the hooks, not in `CLAUDE.md`, so copy both. The scripts need `jq` and `perl` (both included in the dev container base image) and must stay executable.
+For the hooks: copy `templates/.claude/` into the target repo as `.claude/`, together with `CLAUDE.md`; some rules live only in the hooks. The scripts need `jq` and `perl` (both included in the dev container base image) and must stay executable.
 
 For the dev container: copy `templates/.devcontainer/` into the target repo as `.devcontainer/`, then open the repo in Codespaces or VS Code Dev Containers. Copy it together with `CLAUDE.md`: the baseline gets the agent running, and the agent then extends it for the project's stack.
 

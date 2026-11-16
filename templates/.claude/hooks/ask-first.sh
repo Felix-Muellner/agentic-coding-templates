@@ -3,7 +3,6 @@
 source "$(dirname "$0")/lib.sh"
 
 if [[ "$TOOL" != Bash ]]; then
-  [[ "$TOOL" =~ ^(Edit|MultiEdit|Write|NotebookEdit)$ ]] || exit 0
   path=$(jq -r '.tool_input.file_path // .tool_input.notebook_path // ""' <<<"$INPUT")
   [[ -n "$path" ]] || exit 0
   project=$(realpath -m "${CLAUDE_PROJECT_DIR:-$PWD}")

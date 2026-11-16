@@ -2,15 +2,24 @@
 # Nothing lands on main: block commits/merges on main, pushes to main and PR merges into main.
 # Merging PRs into other branches (e.g. run/...) stays allowed.
 source "$(dirname "$0")/lib.sh"
+MAIN=main
+
+on_main() { [[ "$(git branch --show-current 2>/dev/null)" == "$MAIN" ]]; }
 
 check_pr_merge() { # words after "gh pr merge"
   local -a view=(gh pr view)
-  local a sel="" skip=0 base
+  local a sel="" skip="" base
   for a in "$@"; do
-    if ((skip)); then view+=("$a"); skip=0
-    elif [[ "$a" == -R || "$a" == --repo ]]; then view+=("$a"); skip=1
-    elif [[ "$a" != -* && -z "$sel" ]]; then sel=$a; view+=("$a")
-    fi
+    case "$skip" in
+      repo) view+=("$a"); skip=""; continue ;;
+      value) skip=""; continue ;;
+    esac
+    case "$a" in
+      -R | --repo) view+=("$a"); skip=repo ;;
+      -t | --subject | -b | --body | -F | --body-file | -A | --author-email | --match-head-commit) skip=value ;;
+      -*) ;;
+      *) [[ -z "$sel" ]] && { sel=$a; view+=("$a"); } ;;
+    esac
   done
   base=$("${view[@]}" --json baseRefName -q .baseRefName 2>/dev/null) ||
     deny "Couldn't verify the PR's base branch, so the merge was not run."
