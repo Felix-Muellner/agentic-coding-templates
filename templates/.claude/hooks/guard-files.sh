@@ -11,8 +11,8 @@ tool=$(jq -r '.tool_name // ""' <<<"$input")
 path=$(jq -r '.tool_input.file_path // .tool_input.notebook_path // .tool_input.path // ""' <<<"$input")
 [[ -n "$path" ]] || exit 0
 
-base="${path##*/}"
-case "$base" in
+# Keep this list in sync with guard-bash.sh.
+case "${path##*/}" in
   .env.example | .env.sample | .env.template | .env.dist | *.pub) ;;
   .env* | *.pem | *.key | id_rsa | id_dsa | id_ecdsa | id_ed25519)
     echo "Blocked by project hook: '$path' looks like a secret file. Don't read or write it; ask the user if a value is needed." >&2

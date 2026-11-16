@@ -9,7 +9,7 @@ Reusable templates for agentic coding: an agent instruction file, a dev containe
 | File | Purpose |
 |------|---------|
 | [`templates/CLAUDE.md`](templates/CLAUDE.md) | Self-configuring agent instructions: first-run setup, test-driven development, issue-based workflow, independent verification, hard boundaries. |
-| [`templates/.claude/`](templates/.claude/) | Claude Code hooks that enforce the mechanical rules instead of leaving them to the instructions: no bulk staging, nothing lands on `main`, no reading secret files, ask before global installs or edits outside the project, and a reminder to push before finishing. |
+| [`templates/.claude/`](templates/.claude/) | Claude Code hooks that enforce CLAUDE.md's mechanical rules: staging, `main`, secrets, installs, push reminder. |
 | [`templates/.devcontainer/`](templates/.devcontainer/) | Baseline dev container: latest Ubuntu LTS base image, GitHub CLI, and Claude Code installed on create. |
 | [`branch-rulesets/protect-main.json`](branch-rulesets/protect-main.json) | GitHub ruleset that protects `main`: PRs only, squash merges, no force pushes, no bypass. See its [README](branch-rulesets/README.md). |
 
