@@ -1,20 +1,17 @@
 #!/usr/bin/env bash
-# PreToolUse hook for Bash: enforces the mechanical CLAUDE.md rules on shell commands.
+# PreToolUse hook for Bash: enforces the project's mechanical rules on shell commands.
 # Deny = exit 2 with the reason on stderr. Ask = JSON permissionDecision "ask".
-set -uo pipefail
+set -o pipefail
 
 command -v jq >/dev/null || { echo "Blocked: project hooks need jq, which is not installed." >&2; exit 2; }
 
 cmd=$(jq -r '.tool_input.command // ""')
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || true
 MAIN=main
+ask_reason=""
 
 deny() { echo "Blocked by project hook: $1" >&2; exit 2; }
-ask() {
-  jq -n --arg r "$1 CLAUDE.md requires asking first." \
-    '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "ask", permissionDecisionReason: $r}}'
-  exit 0
-}
+ask() { [[ -n "$ask_reason" ]] || ask_reason="$1 Ask the user first."; } # reported after all checks
 on_main() { [[ "$(git branch --show-current 2>/dev/null)" == "$MAIN" ]]; }
 
 # Keep this list in sync with guard-files.sh.
@@ -29,10 +26,11 @@ is_secret() {
 check_secrets() {
   local -a w=("$@")
   local i n=$#
+  case "${w[0]}" in echo | printf | test | '[' | ls | touch) return ;; esac
   for ((i = 1; i < n; i++)); do
     is_secret "${w[i]}" || continue
-    # copying a template into place (cp .env.example .env) is fine
-    [[ ("${w[0]}" == cp || "${w[0]}" == mv) && i -eq n-1 ]] && continue
+    [[ "${w[i-1]}" == '>' || "${w[i-1]}" == '>>' ]] && continue # writing, not reading
+    [[ ("${w[0]}" == cp || "${w[0]}" == mv) && i -eq n-1 ]] && continue # cp .env.example .env
     deny "'${w[i]}' looks like a secret file. Don't read it; ask the user if a value is needed."
   done
 }
@@ -48,23 +46,28 @@ check_install() {
     yarn)
       [[ "${2:-}" == global ]] && ask "Global yarn install." ;;
     pip | pip3 | python | python3)
+      [[ -n "${VIRTUAL_ENV:-}" ]] && return
       [[ ("$first" == pip* && "${2:-}" == install) || "$rest" == *" -m pip install "* ]] &&
-        [[ -z "${VIRTUAL_ENV:-}" ]] && ask "pip install outside a virtualenv installs globally." ;;
+        ask "pip install outside a virtualenv installs globally." ;;
   esac
 }
 
 check_git() {
-  local sub="" a
+  local sub="" a skip=0
   local -a args=()
   for a in "$@"; do
-    if [[ -n "$sub" ]]; then args+=("$a"); elif [[ "$a" != -* ]]; then sub=$a; fi
+    if [[ -n "$sub" ]]; then args+=("$a")
+    elif ((skip)); then skip=0
+    elif [[ "$a" == -C || "$a" == -c || "$a" == --git-dir || "$a" == --work-tree ]]; then skip=1
+    elif [[ "$a" != -* ]]; then sub=$a
+    fi
   done
 
   case "$sub" in
     add)
       for a in "${args[@]}"; do
         case "$a" in
-          --all | --update | . | ./ | '*') deny "bulk staging ('git add $a'). Stage named paths explicitly." ;;
+          --all | --update | . | ./ | '*' | :/) deny "bulk staging ('git add $a'). Stage named paths explicitly." ;;
           --*) ;;
           -*A* | -*u*) deny "bulk staging ('git add $a'). Stage named paths explicitly." ;;
         esac
@@ -73,8 +76,8 @@ check_git() {
     commit)
       for a in "${args[@]}"; do
         case "$a" in
-          -m | -F | -C | -c | --) break ;; # the rest is a message, not flags
           --all) deny "'git commit $a' stages everything. Stage named paths, then commit." ;;
+          -m* | -F* | -C* | -c* | --) break ;; # the rest is a message, not flags
           --*) ;;
           -*a*) deny "'git commit $a' stages everything. Stage named paths, then commit." ;;
         esac
@@ -94,15 +97,28 @@ check_git() {
 
 check_gh() {
   [[ "${1:-} ${2:-}" == "pr merge" ]] || return
-  local -a sel=()
-  local a base
-  for a in "${@:3}"; do [[ "$a" != -* ]] && { sel=("$a"); break; }; done
-  base=$(gh pr view "${sel[@]}" --json baseRefName -q .baseRefName 2>/dev/null) ||
+  local -a view=(gh pr view)
+  local a sel="" skip=0 base
+  for a in "${@:3}"; do
+    if ((skip)); then view+=("$a"); skip=0
+    elif [[ "$a" == -R || "$a" == --repo ]]; then view+=("$a"); skip=1
+    elif [[ "$a" != -* && -z "$sel" ]]; then sel=$a; view+=("$a")
+    fi
+  done
+  base=$("${view[@]}" --json baseRefName -q .baseRefName 2>/dev/null) ||
     deny "couldn't verify the PR's base branch, so the merge was not run."
   [[ "$base" == "$MAIN" ]] && deny "this PR targets '$MAIN'. Merging into $MAIN is the user's job."
 }
 
-# Check each part of a chained command (&&, ||, ;, |, subshells) on its own.
+# Drop text that is data, not commands: heredoc bodies and quoted messages/bodies.
+# Then split chained commands (&&, ||, ;, |, subshells) and space out redirects.
+segments=$(perl -0pe '
+  s/<<-?[ \t]*([\x27"]?)(\w+)\1([^\n]*)\n.*?\n[ \t]*\2[ \t]*(?=\n|$)/HEREDOC$3/gs;
+  s/(\s(?:-m|--message|--body|--title|--subject|-b|-t)[=\s]*)("(?:[^"\\]|\\.)*"|\x27[^\x27]*\x27)/$1MSG/gs;
+  s/&&|\|\||;|\||\(|\)|`|\$\(/\n/g;
+  s/(>>?|<)/ $1 /g;
+' <<<"$cmd")
+
 while IFS= read -r seg; do
   read -ra w <<<"${seg//[\"\']/}"
   while ((${#w[@]})) && [[ "${w[0]}" == *=* ]]; do w=("${w[@]:1}"); done # skip VAR=value
@@ -113,6 +129,10 @@ while IFS= read -r seg; do
     git) check_git "${w[@]:1}" ;;
     gh) check_gh "${w[@]:1}" ;;
   esac
-done < <(sed -E 's/(&&|\|\||;|\||\(|\)|`|\$\()/\n/g' <<<"$cmd")
+done <<<"$segments"
 
+if [[ -n "$ask_reason" ]]; then
+  jq -n --arg r "$ask_reason" \
+    '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "ask", permissionDecisionReason: $r}}'
+fi
 exit 0

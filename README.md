@@ -9,7 +9,7 @@ Reusable templates for agentic coding: an agent instruction file, a dev containe
 | File | Purpose |
 |------|---------|
 | [`templates/CLAUDE.md`](templates/CLAUDE.md) | Self-configuring agent instructions: first-run setup, test-driven development, issue-based workflow, independent verification, hard boundaries. |
-| [`templates/.claude/`](templates/.claude/) | Claude Code hooks that enforce CLAUDE.md's mechanical rules: staging, `main`, secrets, installs, push reminder. |
+| [`templates/.claude/`](templates/.claude/) | Claude Code hooks for staging, `main`, secrets, installs and a push reminder. |
 | [`templates/.devcontainer/`](templates/.devcontainer/) | Baseline dev container: latest Ubuntu LTS base image, GitHub CLI, and Claude Code installed on create. |
 | [`branch-rulesets/protect-main.json`](branch-rulesets/protect-main.json) | GitHub ruleset that protects `main`: PRs only, squash merges, no force pushes, no bypass. See its [README](branch-rulesets/README.md). |
 
@@ -21,7 +21,7 @@ Copy the template you need into the root of the target repo, then start your age
 
 For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.gitignore`, adapts the dev container to the stack, and audits tests, linting, CI, and secret scanning. It asks for confirmation before making these changes, then removes its setup section.
 
-For the hooks: copy `templates/.claude/` into the target repo as `.claude/`, together with `CLAUDE.md`. Several rules live only in the hooks, not in `CLAUDE.md`, so copy both. The scripts need `jq` (included in the dev container base image) and must stay executable.
+For the hooks: copy `templates/.claude/` into the target repo as `.claude/`, together with `CLAUDE.md`. Several rules live only in the hooks, not in `CLAUDE.md`, so copy both. The scripts need `jq` and `perl` (both included in the dev container base image) and must stay executable.
 
 For the dev container: copy `templates/.devcontainer/` into the target repo as `.devcontainer/`, then open the repo in Codespaces or VS Code Dev Containers. Copy it together with `CLAUDE.md`: the baseline gets the agent running, and the agent then extends it for the project's stack.
 
