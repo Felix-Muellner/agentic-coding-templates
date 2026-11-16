@@ -9,6 +9,7 @@ Reusable templates for agentic coding: an agent instruction file, a dev containe
 | File | Purpose |
 |------|---------|
 | [`templates/CLAUDE.md`](templates/CLAUDE.md) | Self-configuring agent instructions: first-run setup, test-driven development, issue-based workflow, independent verification, hard boundaries. |
+| [`templates/.claude/settings.json`](templates/.claude/settings.json) | Claude Code permission rules that back up `CLAUDE.md`: refuse bulk staging, pushes to `main`, reading secrets and changing repo settings; ask before global installs. |
 | [`templates/.devcontainer/`](templates/.devcontainer/) | Baseline dev container: latest Ubuntu LTS base image, GitHub CLI, and Claude Code installed on create. |
 | [`branch-rulesets/protect-main.json`](branch-rulesets/protect-main.json) | GitHub ruleset that protects `main`: PRs only, squash merges, no force pushes, no bypass. See its [README](branch-rulesets/README.md). |
 
@@ -19,6 +20,8 @@ More templates (glossary, spec, and similar) will be added as they prove useful.
 Copy the template you need into the root of the target repo, then start your agent. Each template explains its own conventions at the top.
 
 For `CLAUDE.md`: on first run the agent fills in the project commands, checks `.gitignore`, adapts the dev container to the stack, and audits tests, linting, CI, and secret scanning. It asks for confirmation before making these changes, then removes its setup section.
+
+For the permission rules: copy `templates/.claude/settings.json` into the target repo as `.claude/settings.json`. The rules only match common spellings of a command, so `CLAUDE.md` still states every rule.
 
 For the dev container: copy `templates/.devcontainer/` into the target repo as `.devcontainer/`, then open the repo in Codespaces or VS Code Dev Containers. Copy it together with `CLAUDE.md`: the baseline gets the agent running, and the agent then extends it for the project's stack.
 
