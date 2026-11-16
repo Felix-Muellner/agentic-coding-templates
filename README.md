@@ -10,7 +10,7 @@ Reusable templates for agentic coding: an agent instruction file, a dev containe
 |------|---------|
 | [`templates/CLAUDE.md`](templates/CLAUDE.md) | Self-configuring agent instructions: first-run setup, test-driven development, issue-based workflow, independent verification, hard boundaries. |
 | [`templates/.claude/settings.json`](templates/.claude/settings.json) | Claude Code permission rules that back up `CLAUDE.md`: refuse bulk staging, pushes to `main`, reading secrets and changing repo settings; ask before global installs. |
-| [`templates/.claude/hooks/protect-main.sh`](templates/.claude/hooks/protect-main.sh) | A short, commented hook that stops Claude from pushing to or merging into `main`/`master`, including PR merges. Covers what the permission rules can't see: the current branch and a PR's target. |
+| [`templates/.claude/hooks/protect-main.sh`](templates/.claude/hooks/protect-main.sh) | A short, commented hook that stops Claude from pushing or merging while on `main`/`master`, and from merging PRs unless they target a `run/` branch. Covers what the permission rules can't see: the current branch and a PR's target. |
 | [`templates/.devcontainer/`](templates/.devcontainer/) | Baseline dev container: latest Ubuntu LTS base image, GitHub CLI, and Claude Code installed on create. |
 | [`branch-rulesets/protect-main.json`](branch-rulesets/protect-main.json) | GitHub ruleset that protects `main`: PRs only, squash merges, no force pushes, no bypass. See its [README](branch-rulesets/README.md). |
 
