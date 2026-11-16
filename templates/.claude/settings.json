@@ -1,12 +1,9 @@
 {
   "permissions": {
     "deny": [
-      "Bash(git add -A)",
       "Bash(git add -A *)",
-      "Bash(git add --all)",
       "Bash(git add --all *)",
       "Bash(git add .)",
-      "Bash(git add -u)",
       "Bash(git add -u *)",
       "Bash(git commit -a *)",
       "Bash(git commit -am *)",
@@ -15,8 +12,8 @@
       "Bash(git push * main)",
       "Bash(git push * main *)",
       "Bash(git push * +main)",
-      "Bash(git push * HEAD:main)",
-      "Bash(git push * HEAD:main *)",
+      "Bash(git push *:main)",
+      "Bash(git push *:main *)",
 
       "Read(.env)",
       "Read(.env.local)",
@@ -25,14 +22,15 @@
       "Read(**/*.pem)",
       "Read(**/*.key)",
       "Read(**/id_rsa)",
+      "Read(**/id_ecdsa)",
       "Read(**/id_ed25519)",
 
       "Bash(gh repo edit *)",
       "Bash(gh repo rename *)",
-      "Bash(gh repo archive)",
       "Bash(gh repo archive *)",
-      "Bash(gh repo delete)",
       "Bash(gh repo delete *)",
+      "Bash(gh repo deploy-key *)",
+      "Bash(gh workflow disable *)",
       "Bash(gh secret *)",
       "Bash(gh variable *)",
       "Bash(gh ssh-key *)",
@@ -44,19 +42,20 @@
       "Bash(npm install -g *)",
       "Bash(npm install --global *)",
       "Bash(npm i -g *)",
+      "Bash(npm i --global *)",
       "Bash(pnpm add -g *)",
       "Bash(yarn global *)",
       "Bash(pip install --user *)",
+      "Bash(pip3 install --user *)",
+      "Bash(python -m pip install --user *)",
+      "Bash(python3 -m pip install --user *)",
       "Bash(brew install *)",
       "Bash(apt install *)",
       "Bash(apt-get install *)",
       "Bash(cargo install *)",
       "Bash(go install *)",
 
-      "Bash(gh api -X *)",
-      "Bash(gh api --method *)",
-      "Bash(gh api * -X *)",
-      "Bash(gh api * --method *)",
+      "Bash(gh api *)",
       "Bash(git config --global *)"
     ]
   }
